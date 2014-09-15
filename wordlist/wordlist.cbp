@@ -32,22 +32,22 @@
 		<Compiler>
 			<Add option="-mms-bitfields" />
 			<Add option="-Wall" />
-			<Add directory="D:/gtk3.6.4/include" />
-			<Add directory="D:/gtk3.6.4/include/gtk-3.0" />
-			<Add directory="D:/gtk3.6.4/include/cairo" />
-			<Add directory="D:/gtk3.6.4/include/gdk" />
-			<Add directory="D:/gtk3.6.4/include/glib-2.0" />
-			<Add directory="D:/gtk3.6.4/lib/glib-2.0/include" />
-			<Add directory="D:/gtk3.6.4/include/pango-1.0" />
-			<Add directory="D:/gtk3.6.4/lib/gtk-3.0/include" />
-			<Add directory="D:/gtk3.6.4/include/atk-1.0" />
-			<Add directory="D:/gtk3.6.4/include/gdk-pixbuf-2.0" />
+			<Add directory="C:/gtk3.6.4/include" />
+			<Add directory="C:/gtk3.6.4/include/gtk-3.0" />
+			<Add directory="C:/gtk3.6.4/include/cairo" />
+			<Add directory="C:/gtk3.6.4/include/gdk" />
+			<Add directory="C:/gtk3.6.4/include/glib-2.0" />
+			<Add directory="C:/gtk3.6.4/lib/glib-2.0/include" />
+			<Add directory="C:/gtk3.6.4/include/pango-1.0" />
+			<Add directory="C:/gtk3.6.4/lib/gtk-3.0/include" />
+			<Add directory="C:/gtk3.6.4/include/atk-1.0" />
+			<Add directory="C:/gtk3.6.4/include/gdk-pixbuf-2.0" />
 		</Compiler>
 		<Linker>
 			<Add library="gtk-win32-3.0" />
 			<Add library="gobject-2.0" />
 			<Add library="glib-2.0" />
-			<Add directory="D:/gtk3.6.4/lib" />
+			<Add directory="C:/gtk3.6.4/lib" />
 		</Linker>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

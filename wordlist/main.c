@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <strings.h>
 
 #include <windows.h>
 
@@ -16,15 +15,20 @@
 #include "list.h"
 
 #define MAX_SIZE 1024
+
+char *pass_word_name = "\\user\\pass_word.txt";
+
 char *docfilename;
-struct Word {
+
+typedef struct Word {
 	unsigned char *string;
 	int leng;
-	Lists *line;
-};
-typedef struct Word Word;
+	Lists *linenum;
+} Word;
 
 char current_absolute_path[MAX_SIZE];
+char current_directory[MAX_SIZE];
+char pass_word_absolute_name[MAX_SIZE];
 
 FILE *output;
 Root *root;
@@ -41,15 +45,15 @@ Word *password;
 
 
 void destroy_word (Word *word) {
-	list_destroy (&word->line);
-	//list_destroy_top (&word->line);
+	list_destroy (&word->linenum);
+	//list_destroy_top (&word->linenum);
 	free (word->string);
 	free (word);
 }
 
-//int cmp_string (void *data1, void *data2) {
-//	return strcasecmp((char*)((Word*)data1)->string,(char*)((Word*)data2)->string);
-//}
+int cmp_string (void *data1, void *data2) {
+	return stricmp(((Word*)data1)->string,((Word*)data2)->string);
+}
 
 int cmp_string1 (void *data1, void *data2) {
 
@@ -64,20 +68,19 @@ int cmp_ok (void *wdata, void *data) {
 	if (passroot) {
 		Heap *myheap = heap_find(passroot, (void*)data);
 		if (myheap) {
-			(Lists*)(((Word*)wdata)->line)->num ++;
-			//(List*)((Word*)(myheap->data)->line)->num++;
+			(Lists*)(((Word*)wdata)->linenum)->num ++;
+			//(List*)((Word*)(myheap->data)->linenum)->num++;
 			destroy_word (data);
-
 			return 0;
 		}
 	}
 
-	list_add1(((Word*)wdata)->line,list_top(((Word*)data)->line));
+	list_add1(((Word*)wdata)->linenum,list_top(((Word*)data)->linenum));
 	destroy_word ((Word*)data);
 	return 0;
 }
 
-void print_line (void *data) {
+void print_linenum (void *data) {
 	fprintf (output, "%d.",(int)data);
 }
 
@@ -89,39 +92,38 @@ void print_word (void *data) {
 	space = 15 - word -> leng;
 	for (i=0; i<space; i++)
 		fprintf (output, "-");
-	if (word->line->num == 1)
-		fprintf (output, "[  ] ");
-	else if (word->line->num > 99)
-		fprintf (output, "[**] ");
-	else
-		fprintf (output, "[%2d] ", word->line->num);
+	//if (word->linenum->num == 1)
+	//	fprintf (output, "[  ] ");
+	//else if (word->linenum->num > 99)
+	//	fprintf (output, "[**] ");
+	//else
+	fprintf (output, "<%d> ", word->linenum->num);
 
-	list_print (word->line, print_line);
+	list_print (word->linenum, print_linenum);
 	fprintf (output, "\n");
-	//printf ("%4d  %2d  %s\n", word->line, word->time, word->string);
 	//printf ("*************** ok %d\n", __LINE__); //--------->
 }
 
-Word* init_word (unsigned char *str, unsigned leng, unsigned line) {
+Word* init_word (unsigned char *str, unsigned leng, unsigned linenum) {
 	Word *word = malloc (sizeof (Word));
 	word -> string = malloc (leng + 1);
 	strncpy ((char*)word->string, (char*)str, leng);
 	word -> string [leng] = '\0';
 	word -> leng = leng;
-	word -> line = list_init ();
-	list_add1 (word->line, (void*)(line));
+	word -> linenum = list_init ();
+	list_add1 (word->linenum, (void*)(linenum));
 	return word;
 }
 
 unsigned add_to_heap (unsigned char *thebuffer, unsigned thelength, Root *root, Root *thepass) {
-	unsigned i,leng, line;
+	unsigned i,leng, linenum;
 	unsigned word_num = 0;
 	unsigned char *wordp;
 	Word *word;
 
-	for (i=0,line=1; i<thelength; i++) {
+	for (i=0,linenum=1; i<thelength; i++) {
 		if (thebuffer[i] == '\n') {
-			line++;
+			linenum++;
 			continue;
 		}
 		if (!isalpha (thebuffer[i])) continue;
@@ -131,7 +133,7 @@ unsigned add_to_heap (unsigned char *thebuffer, unsigned thelength, Root *root, 
 			continue;        //too short
 		}
 
-		word = init_word (wordp, leng, line);
+		word = init_word (wordp, leng, linenum);
 //		if (thepass){
 //
 //                        if (heap_find(thepass, (void*)word)) {
@@ -164,7 +166,7 @@ void save_to_file (char *the_name) {
 
 	fprintf (output, "");
 	fprintf (output,"+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-	fprintf (output,"print string, and time, and line which once found!\n");
+	fprintf (output,"print string, and time, and linenum which once found!\n");
 	fprintf (output,"doc-name: %s\n", docfilename);
 	g_free (docfilename);
 	fprintf (output,"file-name: %s\n", the_name);
@@ -174,9 +176,25 @@ void save_to_file (char *the_name) {
 	fprintf (output,"+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	heap_print (root);
 	fprintf (output,"+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+	fclose (output);
 
 }
 
+//
+char* get_current_absolute_path (char *the_path) {
+	int path_leng = GetModuleFileName (NULL, the_path, MAX_SIZE);
+	if ( path_leng == 0 ) {
+		printf ("GetModuleFileName error!\n");
+		exit(-1);
+	}
+	for (int i=path_leng-1; i> 0; i--) {
+		if (the_path[i] == '\\') {
+			the_path[i] = '\0';
+			return the_path;
+		}
+	}
+	return NULL;
+}
 
 //
 void open_and_save_file (GtkWidget *win, char *the_name) {
@@ -185,14 +203,11 @@ void open_and_save_file (GtkWidget *win, char *the_name) {
 	int fd = open (the_name, O_RDONLY | O_BINARY);
 	read (fd, buffer, length);
 
-	char *pass_name = "\\user\\pass_world.txt";
-	//char *nname = "\\hello.txt";
-	strcat (current_absolute_path, pass_name);
-	printf ("current = %s", current_absolute_path);
 
-	unsigned passlength = get_file_size(current_absolute_path);
+
+	unsigned passlength = get_file_size(pass_word_absolute_name);
 	unsigned char *passbuffer = malloc (passlength);
-	int passfd = open (current_absolute_path, O_RDONLY | O_BINARY);
+	int passfd = open (pass_word_absolute_name, O_RDONLY | O_BINARY);
 
 	root = heap_init ();
 
@@ -204,17 +219,15 @@ void open_and_save_file (GtkWidget *win, char *the_name) {
 
 	if (passfd > 0) {
 		read (passfd, passbuffer, passlength);
-		for (int i=0; i<passlength; i++) {
-			printf ("%c\n", passbuffer[i]);
-		}
 		password_num = add_to_heap(passbuffer, passlength, passroot, NULL);
 		word_num = add_to_heap(buffer, length, root, passroot);
 	} else {
+		printf ("error! can't open pass_world.txt\n");
 		word_num = add_to_heap(buffer, length, root, NULL);
 	}
 
-
-
+	close (fd);
+	free(buffer);
 	GtkWidget *dialog;
 
 	dialog = gtk_file_chooser_dialog_new ("Save File",
@@ -271,6 +284,7 @@ static void openfunc (GtkWidget *wid, GtkWidget *win) {
 		open_and_save_file (win, docfilename);
 
 	} else {
+		g_free (docfilename);
 		gtk_widget_destroy (dialog);
 	}
 
@@ -280,32 +294,26 @@ static void openfunc (GtkWidget *wid, GtkWidget *win) {
 
 //
 int main (int argc, char *argv[]) {
-//	if (getcwd(current_absolute_path, MAX_SIZE) == NULL ) {
-//		printf ("error!\n");
-//		exit(-1);
-//	}
-        int stringlength = GetModuleFileName (NULL, current_absolute_path, MAX_SIZE);
-        printf ("current = %s\n", current_absolute_path);
 
-	for (int i=strlen (argv[0])-1; i> 0; i--) {
-		if (argv[0][i] == '\\') {
-			argv[0][i] = '\0';
-			break;
-		}
-	}
-	strcpy (current_absolute_path, argv[0]);
+	get_current_absolute_path (current_absolute_path);
+	sprintf (pass_word_absolute_name, "%s%s", current_absolute_path, pass_word_name);
+	//strcat (current_absolute_path, pass_word_name);
+	printf ("current = %s", pass_word_absolute_name);
+
 	GtkWidget *button = NULL;
 	GtkWidget *win = NULL;
 	GtkWidget *vbox = NULL;
 
 	/* Initialize GTK+ */
-	g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);
+	//g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);
 	gtk_init (&argc, &argv);
-	g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, g_log_default_handler, NULL);
+	//g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, g_log_default_handler, NULL);
 
 	/* Create the main window */
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_container_set_border_width (GTK_CONTAINER (win), 8);
+	gtk_window_set_default_size (GTK_WINDOW (win), 180, 100);
+	gtk_window_set_opacity (GTK_WINDOW (win), 0.9);
+	gtk_container_set_border_width (GTK_CONTAINER (win), 5);
 	gtk_window_set_title (GTK_WINDOW (win), "wordlist");
 	gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
 	gtk_widget_realize (win);
@@ -313,7 +321,7 @@ int main (int argc, char *argv[]) {
 
 	/* Create a vertical box with buttons */
 	//vbox = gtk_vbox_new (TRUE, 6);
-	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 
 	gtk_container_add (GTK_CONTAINER (win), vbox);
 
@@ -326,9 +334,9 @@ int main (int argc, char *argv[]) {
 	g_signal_connect (button, "clicked", G_CALLBACK (about), NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
-//	button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
-//	g_signal_connect (button, "clicked", gtk_main_quit, NULL);
-//	gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
+	button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
+	g_signal_connect (button, "clicked", gtk_main_quit, NULL);
+	gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
 	/* Enter the main loop */
 	gtk_widget_show_all (win);
