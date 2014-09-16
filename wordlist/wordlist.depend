@@ -2484,3 +2484,22 @@
 
 1359369276 e:\codeblocks\wordlist\list.h
 
+1410843080 source:c:\users\lisper\documents\github\wordlist\wordlist\main.c
+	<stdlib.h>
+	<gtk/gtk.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<unistd.h>
+	<fcntl.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<windows.h>
+	"heap.h"
+	"list.h"
+
+1410843080 c:\users\lisper\documents\github\wordlist\wordlist\heap.h
+
+1410843080 c:\users\lisper\documents\github\wordlist\wordlist\list.h
+

@@ -201,6 +201,11 @@ void open_and_save_file (GtkWidget *win, char *the_name) {
 	unsigned length = get_file_size(the_name);
 	unsigned char *buffer = malloc (length);
 	int fd = open (the_name, O_RDONLY | O_BINARY);
+	if (fd <= 0) {
+                printf ("error! can't open input file!\n");
+                printf ("input file: %s\n", the_name);
+
+        }
 	read (fd, buffer, length);
 
 
@@ -334,7 +339,7 @@ int main (int argc, char *argv[]) {
 	g_signal_connect (button, "clicked", G_CALLBACK (about), NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
-	button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
+	button = gtk_button_new_with_label("exit");
 	g_signal_connect (button, "clicked", gtk_main_quit, NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
