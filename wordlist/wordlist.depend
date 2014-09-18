@@ -2503,3 +2503,34 @@
 
 1410843080 c:\users\lisper\documents\github\wordlist\wordlist\list.h
 
+1411049321 source:d:\documents\github\wordlist\wordlist\main.c
+	<stdlib.h>
+	<gtk/gtk.h>
+	<glib/gstdio.h>
+	<errno.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<unistd.h>
+	<fcntl.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<windows.h>
+	<shlwapi.h>
+	"heap.h"
+	"list.h"
+
+1366375698 c:\gtk3.6.4\include\glib-2.0\glib\gstdio.h
+	<glib/gprintf.h>
+	<sys/stat.h>
+
+1366375698 c:\gtk3.6.4\include\glib-2.0\glib\gprintf.h
+	<glib.h>
+	<stdio.h>
+	<stdarg.h>
+
+1410628092 d:\documents\github\wordlist\wordlist\heap.h
+
+1359369276 d:\documents\github\wordlist\wordlist\list.h
+

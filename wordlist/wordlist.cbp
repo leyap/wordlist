@@ -15,6 +15,11 @@
 					<Add option="-g" />
 					<Add option="-std=c99" />
 				</Compiler>
+				<Linker>
+					<Add library="C:\gtk3.6.4\lib\libgdk_pixbuf-2.0.dll.a" />
+					<Add library="C:\gtk3.6.4\lib\libgdk-3.dll.a" />
+					<Add library="..\..\..\..\Program Files\CodeBlocks13\MinGW\lib\libshlwapi.a" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/wordlist" prefix_auto="1" extension_auto="1" />
@@ -28,12 +33,15 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-mwindows" />
+					<Add library="C:\gtk3.6.4\lib\libgdk_pixbuf-2.0.dll.a" />
+					<Add library="C:\gtk3.6.4\lib\libgdk-3.dll.a" />
+					<Add library="..\..\..\..\Program Files\CodeBlocks13\MinGW\lib\libshlwapi.a" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-mms-bitfields" />
 			<Add option="-Wall" />
+			<Add option="-mms-bitfields" />
 			<Add directory="C:/gtk3.6.4/include" />
 			<Add directory="C:/gtk3.6.4/include/gtk-3.0" />
 			<Add directory="C:/gtk3.6.4/include/cairo" />

@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include <glib/gstdio.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,6 +12,7 @@
 #include <ctype.h>
 
 #include <windows.h>
+#include <shlwapi.h>
 
 #include "heap.h"
 #include "list.h"
@@ -18,8 +21,12 @@
 //#define (str) g_locale_to_utf8(str, -1, NULL, NULL, NULL)
 #define _PATH(str) g_convert(str,-1,"GB2312","UTF-8",NULL,NULL,NULL)
 char *pass_word_name = "\\user\\pass_word.txt";
-char *image_name = "\\user\\background.png";
+char *image_name = "\\user\\background.gif";
 char *docfilename;
+
+gchar *current_folder;
+gchar current_save_filename[100];
+gchar *current_name;
 
 typedef struct Word {
 	unsigned char *string;
@@ -182,10 +189,10 @@ void save_to_file (char *the_name)
 	fprintf (output,"print string, and time, and linenum which once found!\n");
 	fprintf (output,"doc-name: %s\n", docfilename);
 	g_free (docfilename);
-	fprintf (output,"file-name: %s\n", the_name);
+	fprintf (output,"out-name: %s\n", the_name);
 	fprintf (output,"word sum: %d\n", word_num);
 	//fprintf (output,"word_pass %d\n", word_pass);
-	fprintf (output,"find %d\n", heap_num (root));
+	fprintf (output,"find word %d\n", heap_num (root));
 	fprintf (output,"+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	heap_print (root);
 	fprintf (output,"+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -255,8 +262,17 @@ void open_and_save_file (GtkWidget *win, char *the_name)
 	                                      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 	                                      NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+	if (current_folder)
+                gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), current_folder);
+        sprintf (current_save_filename, "%s_list.txt", current_name);
+        if (current_folder)
+                g_free (current_folder);
+        if (current_name)
+                g_free (current_name);
+        current_folder = NULL;
+        current_name = NULL;
 
-	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), "Untitled document");
+	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), current_save_filename);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *filename;
@@ -295,8 +311,12 @@ static void openfunc (GtkWidget *wid, GtkWidget *win)
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 
-
 		docfilename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		current_folder = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
+		current_name =  gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+                PathStripPath (current_name);
+
 		gtk_widget_destroy (dialog);
 		open_and_save_file (win, docfilename);
 
@@ -307,6 +327,8 @@ static void openfunc (GtkWidget *wid, GtkWidget *win)
 
 }
 
+
+
 //
 int main (int argc, char *argv[])
 {
@@ -315,12 +337,12 @@ int main (int argc, char *argv[])
 	sprintf (pass_word_absolute_name, "%s%s", current_absolute_path, pass_word_name);
 	sprintf (image_absolute_name, "%s%s", current_absolute_path, image_name);
 	//strcat (current_absolute_path, pass_word_name);
-	printf ("current = %s", pass_word_absolute_name);
 
 	GtkWidget *button = NULL;
 	GtkWidget *win = NULL;
 	GtkWidget *image = NULL;
 	GtkWidget *layout;
+         GdkPixbuf *pixbuf;
 
 	/* Initialize GTK+ */
 	//g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);
@@ -329,10 +351,10 @@ int main (int argc, char *argv[])
 
 	/* Create the main window */
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request (win, 440, 308);
+	gtk_widget_set_size_request (win, 400, 300);
 	gtk_window_set_resizable (GTK_WINDOW (win), FALSE);
 	gtk_window_set_opacity (GTK_WINDOW (win), 0.9);
-	gtk_container_set_border_width (GTK_CONTAINER (win), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (win), 0);
 	gtk_window_set_title (GTK_WINDOW (win), "wordlist");
 	gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
 	gtk_widget_realize (win);
@@ -342,6 +364,8 @@ int main (int argc, char *argv[])
 	//vbox = gtk_vbox_new (TRUE, 6);
 
 	image = gtk_image_new_from_file (image_absolute_name);
+
+
 	layout = gtk_layout_new(NULL, NULL);
 	gtk_container_add(GTK_CONTAINER (win), layout);
 
@@ -349,20 +373,20 @@ int main (int argc, char *argv[])
 
 
 	button = gtk_button_new_with_label("open file");
-	gtk_widget_set_size_request(button, 80, 50);
+	gtk_widget_set_size_request(button, 80, 40);
 	//button = gtk_button_new_from_stock (GTK_STOCK_DIALOG_INFO);
 	g_signal_connect (button, "clicked", G_CALLBACK (openfunc), (gpointer) win);
-	gtk_layout_put(GTK_LAYOUT(layout), button, 0, 0);
+	gtk_layout_put(GTK_LAYOUT(layout), button, 10, 10);
 
 	button = gtk_button_new_with_label("about");
-	gtk_widget_set_size_request(button, 80, 50);
+	gtk_widget_set_size_request(button, 80, 40);
 	g_signal_connect (button, "clicked", G_CALLBACK (about), NULL);
-	gtk_layout_put(GTK_LAYOUT(layout), button, 0, 60);
+	gtk_layout_put(GTK_LAYOUT(layout), button, 400-80-10, 10);
 
 	button = gtk_button_new_with_label("exit");
-	gtk_widget_set_size_request(button, 80, 50);
+	gtk_widget_set_size_request(button, 80, 40);
 	g_signal_connect (button, "clicked", gtk_main_quit, NULL);
-	gtk_layout_put(GTK_LAYOUT(layout), button, 0, 120);
+	gtk_layout_put(GTK_LAYOUT(layout), button, 400-80-10, 300-40-10);
 
 	/* Enter the main loop */
 	gtk_widget_show_all (win);
