@@ -2484,9 +2484,11 @@
 
 1359369276 e:\codeblocks\wordlist\list.h
 
-1410927050 source:c:\users\lisper\documents\github\wordlist\wordlist\main.c
+1411451062 source:c:\users\lisper\documents\github\wordlist\wordlist\main.c
 	<stdlib.h>
 	<gtk/gtk.h>
+	<glib/gstdio.h>
+	<errno.h>
 	<sys/types.h>
 	<sys/stat.h>
 	<unistd.h>
@@ -2496,6 +2498,7 @@
 	<string.h>
 	<ctype.h>
 	<windows.h>
+	<shlwapi.h>
 	"heap.h"
 	"list.h"
 

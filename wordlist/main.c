@@ -291,7 +291,11 @@ void open_and_save_file (GtkWidget *win, char *the_name)
 static void about (GtkWidget *wid, GtkWidget *win)
 {
 	GtkWidget *dialog = NULL;
-	dialog = gtk_message_dialog_new (GTK_WINDOW (win), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "用于生成一个英文文档的每个单词的频率以及每次出现的行号\nauthor:lisper.li@dfrobot.com");
+	dialog = gtk_message_dialog_new (GTK_WINDOW (win),
+                                  GTK_DIALOG_MODAL,
+                                  GTK_MESSAGE_INFO,
+                                  GTK_BUTTONS_CLOSE,
+                                  "用于生成一个英文文档的每个单词的频率以及每次出现的行号\nauthor:lisper.li@dfrobot.com");
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
@@ -342,7 +346,7 @@ int main (int argc, char *argv[])
 	GtkWidget *win = NULL;
 	GtkWidget *image = NULL;
 	GtkWidget *layout;
-         GdkPixbuf *pixbuf;
+         //GdkPixbuf *pixbuf;
 
 	/* Initialize GTK+ */
 	//g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);
