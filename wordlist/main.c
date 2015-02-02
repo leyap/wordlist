@@ -263,14 +263,14 @@ void open_and_save_file (GtkWidget *win, char *the_name)
 	                                      NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
 	if (current_folder)
-                gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), current_folder);
-        sprintf (current_save_filename, "%s_list.txt", current_name);
-        if (current_folder)
-                g_free (current_folder);
-        if (current_name)
-                g_free (current_name);
-        current_folder = NULL;
-        current_name = NULL;
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog), current_folder);
+	sprintf (current_save_filename, "%s_list.txt", current_name);
+	if (current_folder)
+		g_free (current_folder);
+	if (current_name)
+		g_free (current_name);
+	current_folder = NULL;
+	current_name = NULL;
 
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), current_save_filename);
 
@@ -292,10 +292,10 @@ static void about (GtkWidget *wid, GtkWidget *win)
 {
 	GtkWidget *dialog = NULL;
 	dialog = gtk_message_dialog_new (GTK_WINDOW (win),
-                                  GTK_DIALOG_MODAL,
-                                  GTK_MESSAGE_INFO,
-                                  GTK_BUTTONS_CLOSE,
-                                  "用于生成一个英文文档的每个单词的频率以及每次出现的行号\nauthor:lisper.li@dfrobot.com");
+	                                 GTK_DIALOG_MODAL,
+	                                 GTK_MESSAGE_INFO,
+	                                 GTK_BUTTONS_CLOSE,
+	                                 "用于生成一个英文文档的每个单词的频率以及每次出现的行号\nauthor:lisper.li@dfrobot.com");
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
@@ -319,7 +319,7 @@ static void openfunc (GtkWidget *wid, GtkWidget *win)
 		current_folder = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
 		current_name =  gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 
-                PathStripPath (current_name);
+		PathStripPath (current_name);
 
 		gtk_widget_destroy (dialog);
 		open_and_save_file (win, docfilename);
@@ -346,7 +346,7 @@ int main (int argc, char *argv[])
 	GtkWidget *win = NULL;
 	GtkWidget *image = NULL;
 	GtkWidget *layout;
-         //GdkPixbuf *pixbuf;
+	//GdkPixbuf *pixbuf;
 
 	/* Initialize GTK+ */
 	//g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);

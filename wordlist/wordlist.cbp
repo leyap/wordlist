@@ -18,7 +18,7 @@
 				<Linker>
 					<Add library="C:\gtk3.6.4\lib\libgdk_pixbuf-2.0.dll.a" />
 					<Add library="C:\gtk3.6.4\lib\libgdk-3.dll.a" />
-					<Add library="..\..\..\..\Program Files\CodeBlocks13\MinGW\lib\libshlwapi.a" />
+					<Add library="C:\Program Files (x86)\CodeBlocks\MinGW\lib\libshlwapi.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">
